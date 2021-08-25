@@ -1,13 +1,13 @@
 apiVersion: v1
 entries:
   cert-manager-webhook-namecheap:
-  - apiVersion: v1
+  - apiVersion: v2
     appVersion: v0.1.0
-    created: "2021-08-25T10:10:32.878848-07:00"
+    created: "2021-08-25T10:13:37.075088-07:00"
     description: Namecheap Webhook for Cert Manager
-    digest: 7415b929d1027cf99cab51d334ccff076d5d6e9b1c10e5b6ef4d70784a33f1e3
+    digest: 77fba8e2d64751fa652a3cd25f956b9e681b474538f2dcb4417c01e9caeeb6f1
     name: cert-manager-webhook-namecheap
     urls:
     - cert-manager-webhook-namecheap-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-25T10:10:32.878195-07:00"
+generated: "2021-08-25T10:13:37.074047-07:00"
