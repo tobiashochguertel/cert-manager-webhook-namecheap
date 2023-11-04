@@ -181,7 +181,7 @@ spec:
 ```
 
 > [!IMPORTANT]
-> Important is that you use the annotation `cert-manager.io/cluster-issuer` and not `cert-manager.io/issuer`!
+> Important is that you **use** the annotation `cert-manager.io/cluster-issuer` and not `cert-manager.io/issuer`!
 
 
 ```yaml
