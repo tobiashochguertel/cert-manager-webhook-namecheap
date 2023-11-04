@@ -28,8 +28,8 @@ metadata:
   namespace: cert-manager
 type: Opaque
 stringData:
-  apiUser: <base64 encoded>my_username_from_namecheap</base64 encoded>
-  apiKey: <base64 encoded>my_api_key_from_namecheap</base64 encoded>
+  apiUser: <not base64 encoded>my_username_from_namecheap</not base64 encoded>
+  apiKey: <not base64 encoded>my_api_key_from_namecheap</not base64 encoded>
 ```
 
 ## Examples: 
