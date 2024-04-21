@@ -5,6 +5,7 @@ IMAGE_NAME := cert-manager-webhook-namecheap
 IMAGE_TAG := $(shell git describe --dirty)
 REPO_NAME := kelvie
 PLATFORMS := linux/amd64,linux/arm64
+DOCKER_OPTS :=
 
 OUT := $(shell pwd)/_out
 
@@ -29,12 +30,12 @@ clean-kubebuilder:
 	rm -Rf _test/kubebuilder
 
 tag:
-	docker buildx build --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):latest" .
-	docker buildx build --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)" .
+	docker buildx build $(DOCKER_OPTS) --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):latest" .
+	docker buildx build $(DOCKER_OPTS) --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)" .
 
 push:
-	docker buildx build --push --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):latest" .
-	docker buildx build --push --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)" .
+	docker buildx build $(DOCKER_OPTS) --push --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):latest" .
+	docker buildx build $(DOCKER_OPTS) --push --platform $(PLATFORMS) -t "$(REPO_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)" .
 
 
 .PHONY: rendered-manifest.yaml
