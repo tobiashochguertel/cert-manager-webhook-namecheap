@@ -1,5 +1,7 @@
 # cert-manager webhook for Namecheap
 
+- https://github.com/cert-manager/cert-manager/issues/3394#issuecomment-1302662997
+
 # Instructions for use with Let's Encrypt
 
 Use helm to deploy this into your `cert-manager` namespace:
@@ -15,7 +17,7 @@ helm install -n cert-manager namecheap-webhook deploy/cert-manager-webhook-namec
 Create the cluster issuers:
 
 ``` sh
-helm install --set email=yourname@example.com -n cert-manager letsencrypt-namecheap-issuer deploy/letsencrypt-namecheap-issuer/
+helm install --set email=tobias.hochguertel@hochguertel.work -n cert-manager letsencrypt-namecheap-issuer deploy/letsencrypt-namecheap-issuer/
 ```
 
 Go to [namecheap](https://www.namecheap.com/myaccount/login/) and set up your API key (note that you'll need to whitelist the public IP of the k8s cluster to use the webhook), and set the secret:
@@ -32,7 +34,7 @@ stringData:
   apiKey: <not base64 encoded>my_api_key_from_namecheap</not base64 encoded>
 ```
 
-## Examples: 
+## Examples:
 
 <details>
 
@@ -144,7 +146,7 @@ And now validate that it worked:
 kubectl get certificates -n default
 kubectl describe certificate service-cert-prod
 ```
-  
+
 </details>
 
 ## Traefik example

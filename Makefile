@@ -17,6 +17,7 @@ test: _test/kubebuilder
 	go test -v .
 
 _test/kubebuilder:
+	# https://github.com/kubernetes-sigs/kubebuilder/releases/download/v2.3.2/kubebuilder_2.3.2_linux_amd64.tar.gz
 	curl -fsSL https://github.com/kubernetes-sigs/kubebuilder/releases/download/v$(KUBEBUILDER_VERSION)/kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH).tar.gz -o kubebuilder-tools.tar.gz
 	mkdir -p _test/kubebuilder
 	tar -xvf kubebuilder-tools.tar.gz
