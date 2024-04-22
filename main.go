@@ -126,10 +126,15 @@ func (c *namecheapDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 		return err
 	}
 
+	fmt.Printf("Decoded configuration %v \n", cfg)
+
 	zone, domain, err := c.parseChallenge(ch)
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("Present: zone: %s \n", zone)
+	fmt.Printf("Present: domain: %s \n", domain)
 
 	if c.namecheapClient == nil {
 		if err := c.setNamecheapClient(ch, cfg); err != nil {
@@ -138,6 +143,11 @@ func (c *namecheapDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	}
 
 	d, err := c.namecheapClient.GetDomain(zone)
+	fmt.Printf("Present: d: %v \n", d)
+	fmt.Printf("Present: d.Name: %v \n", d.Name)
+	fmt.Printf("Present: d.EmailType: %v \n", d.EmailType)
+	fmt.Printf("Present: d.Records: %v \n", d.Records)
+	fmt.Printf("Present: err: %v \n", err)
 	if err != nil {
 		return err
 	}
@@ -181,6 +191,7 @@ func (c *namecheapDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	d.removeChallengeRecord(domain, ch.Key)
 
+	fmt.Printf("CleanUp: %s.%s \n", domain, zone)
 	if err := c.namecheapClient.SetDomain(*d); err != nil {
 		return err
 	}
@@ -244,6 +255,8 @@ func (c *namecheapDNSProviderSolver) getSecret(ref *cmmeta.SecretKeySelector, na
 }
 
 func (c *namecheapDNSProviderSolver) setNamecheapClient(ch *v1alpha1.ChallengeRequest, cfg namecheapDNSProviderConfig) error {
+	fmt.Printf("setNamecheapClient: cfg: %v \n", cfg)
+
 	apiKey, err := c.getSecret(cfg.APIKeySecretRef, ch.ResourceNamespace)
 	if err != nil {
 		return err
@@ -272,6 +285,8 @@ func (c *namecheapDNSProviderSolver) setNamecheapClient(ch *v1alpha1.ChallengeRe
 		opts.ClientIp = *cfg.ClientIP
 	}
 
+	fmt.Printf("setNamecheapClient: opts.ClientIp: %v \n", opts.ClientIp)
+
 	// default UserName to APIUser if not set
 	if cfg.UsernameSecretRef == nil {
 		opts.UserName = *apiUser
@@ -282,6 +297,8 @@ func (c *namecheapDNSProviderSolver) setNamecheapClient(ch *v1alpha1.ChallengeRe
 		}
 		opts.UserName = *username
 	}
+
+	fmt.Printf("setNamecheapClient: opts: %v \n", opts)
 
 	c.namecheapClient = &namecheapClientImpl{
 		client: namecheap.NewClient(opts),
@@ -301,12 +318,19 @@ func (c *namecheapDNSProviderSolver) parseChallenge(ch *v1alpha1.ChallengeReques
 	); err != nil {
 		return "", "", err
 	}
+	fmt.Printf("parseChallenge: zone: %v \n", zone)
 	zone = util.UnFqdn(zone)
+	fmt.Printf("parseChallenge: util.UnFqdn(zone): %v \n", zone)
 
+	fmt.Printf("parseChallenge: ch.ResolvedFQDN: %v \n", ch.ResolvedFQDN)
+	fmt.Printf("parseChallenge: ch.ResolvedZone: %v \n", ch.ResolvedZone)
+	fmt.Printf("parseChallenge: \".\"+ch.ResolvedZone: %v \n", "."+ch.ResolvedZone)
 	if idx := strings.Index(ch.ResolvedFQDN, "."+ch.ResolvedZone); idx != -1 {
 		domain = ch.ResolvedFQDN[:idx]
+		fmt.Printf("parseChallenge: (if case) domain: %v \n", domain)
 	} else {
 		domain = util.UnFqdn(ch.ResolvedFQDN)
+		fmt.Printf("parseChallenge: (else case) domain: %v \n", domain)
 	}
 
 	return zone, domain, nil
@@ -314,6 +338,9 @@ func (c *namecheapDNSProviderSolver) parseChallenge(ch *v1alpha1.ChallengeReques
 
 // Adds a record to a domain
 func (d *Domain) addChallengeRecord(domain, key string) {
+	fmt.Printf("addChallengeRecord: domain: %v \n", domain)
+	fmt.Printf("addChallengeRecord: key: %v \n", key)
+
 	*d.Records = append(
 		*d.Records,
 		Record{
@@ -327,6 +354,9 @@ func (d *Domain) addChallengeRecord(domain, key string) {
 
 // Removes a record from a domain
 func (d *Domain) removeChallengeRecord(domain, key string) {
+	fmt.Printf("removeChallengeRecord: domain: %v \n", domain)
+	fmt.Printf("removeChallengeRecord: key: %v \n", key)
+
 	for i, record := range *d.Records {
 		if *record.Name == domain &&
 			*record.Type == namecheap.RecordTypeTXT &&
@@ -339,6 +369,8 @@ func (d *Domain) removeChallengeRecord(domain, key string) {
 }
 
 func (c *namecheapClientImpl) SetDomain(domain Domain) error {
+	fmt.Printf("SetDomain: domain: %v \n", domain)
+
 	args := &namecheap.DomainsDNSSetHostsArgs{
 		Domain:    domain.Name,
 		EmailType: domain.EmailType,
@@ -359,14 +391,19 @@ func (c *namecheapClientImpl) SetDomain(domain Domain) error {
 	}
 	args.Records = &records
 
+	fmt.Printf("SetDomain: args: %v \n", args)
 	if _, err := c.client.DomainsDNS.SetHosts(args); err != nil {
+		fmt.Printf("SetDomain: err: %v \n", err)
 		return err
 	}
 	return nil
 }
 
 func (c *namecheapClientImpl) GetDomain(domain string) (*Domain, error) {
+	fmt.Printf("GetDomain: domain: %v \n", domain)
 	resp, err := c.client.DomainsDNS.GetHosts(domain)
+	fmt.Printf("GetDomain: resp: %v \n", resp)
+	fmt.Printf("GetDomain: err: %v \n", err)
 	if err != nil {
 		return nil, err
 	}
